@@ -33,9 +33,9 @@ exports.REGISTER = [
   body("email")
     .notEmpty()
     .trim()
+    .toLowerCase()
     .normalizeEmail()
     .isEmail()
-    .toLowerCase()
     .withMessage("email must be a valid email address")
     .custom((value, { req }) => {
       return User.findOne({ where: { email: value } }).then((user) => {
@@ -56,19 +56,43 @@ exports.REGISTER = [
     ),
 ];
 
+exports.LOGIN = [
+  body("email")
+    .notEmpty()
+    .isEmail()
+    .trim()
+    .toLowerCase()
+    .normalizeEmail()
+    .custom((value, { req }) => {
+      return User.findOne({ email: value }).then((result) => {
+        if (!result) {
+          return Promise.reject("email does not exist");
+        }
+        req.user = result;
+      });
+    }),
+  
+  body("password").notEmpty().trim(),
+];
+
 // exports.LOGIN = [
 //   body("email")
 //     .not()
 //     .isEmpty()
+//     // .notEmpty()
+//     .trim()
+//     .toLowerCase()
+//     .normalizeEmail()
 //     .isEmail()
+//     .withMessage("invalid email address")
 //     .custom((value, { req }) => {
-//       return User.findOne({ email: value }).then((result) => {
-//         if (!result) {
+//       return User.findOne({ email: value }).then((user) => {
+//         if (!user) {
 //           return Promise.reject("email does not exist");
 //         }
 //         req.user = result;
 //       });
-//     })
-//     .normalizeEmail(),
+//     }),
+  
 //   body("password").notEmpty().trim(),
 // ];
