@@ -4,11 +4,6 @@ const { body } = require("express-validator");
 const db = require("../../models");
 const User = db.user;
 
-// const Sequelize = require("sequelize");
-// const sequelize = require("../../models/index.js");
-// const userModel = require("../../models/user");
-// const User = userModel(sequelize, Sequelize);
-
 exports.REGISTER = [
   body("firstName")
     .isString()
@@ -74,25 +69,3 @@ exports.LOGIN = [
   
   body("password").notEmpty().trim(),
 ];
-
-// exports.LOGIN = [
-//   body("email")
-//     .not()
-//     .isEmpty()
-//     // .notEmpty()
-//     .trim()
-//     .toLowerCase()
-//     .normalizeEmail()
-//     .isEmail()
-//     .withMessage("invalid email address")
-//     .custom((value, { req }) => {
-//       return User.findOne({ email: value }).then((user) => {
-//         if (!user) {
-//           return Promise.reject("email does not exist");
-//         }
-//         req.user = result;
-//       });
-//     }),
-  
-//   body("password").notEmpty().trim(),
-// ];

@@ -44,5 +44,6 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 db.user = require('./user')(sequelize, DataTypes);
+db.question = require('./question')(sequelize, DataTypes);
 
 module.exports = db;
