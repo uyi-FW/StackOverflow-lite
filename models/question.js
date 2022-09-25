@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Question.belongsTo(models.User, {
         foreignKey: "userId",
-        as: "user"
+        // as: "user"
       });
     }
   }
@@ -27,10 +27,6 @@ module.exports = (sequelize, DataTypes) => {
       userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        // references: {
-        //   model: User,
-        //   key: "userId",
-        // },
       },
     },
     {

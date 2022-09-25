@@ -15,4 +15,12 @@ router.post(
   questionController.addQuestion
 );
 
+router.get("/", checkAuth, questionController.getAll);
+
+router.get("/me", checkAuth, questionController.getMine);
+
+router.get("/:id", checkAuth, questionController.getOne);
+
+
+
 module.exports = router;

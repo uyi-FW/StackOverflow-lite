@@ -28,7 +28,7 @@ class Users {
       // save to db
       // .toJSON() gets the raw data without _previousDataValues
       let newUser = await User.create(payload);
-      newUser = newUser.toJSON()
+      newUser = newUser.toJSON();
 
       // sign token
       const token = jwt.sign(
@@ -58,36 +58,40 @@ class Users {
     }
     try {
       // getting the password from req.body
-      const { password } = req.body;
+      const { email, password } = req.body;
 
-      // req.user is passed from the validator
-      // .toJSON() gets the raw data without _previousDataValues
-      const user = req.user.toJSON();
-      console.log("USERRRRRR: ", user);
+      // check if email exists on db
+      let user = await User.findOne({ where: { email: email } });
 
-      // check validity of password
-      const valid = await bcrypt.compare(password, user.password);
-      if (!valid) {
-        return errorResponse(res, 409, "invalid login details", null);
+      if (!user) {
+        return errorResponse(res, 400, "invalid email or password", null);
       } else {
-        // create a token
-        const token = jwt.sign(
-          {
-            id: user.id,
-            email: user.email,
-          },
-          process.env.JWT_SECRET,
-          { expiresIn: "24h" }
-        );
+        // .toJSON() gets the raw data without _previousDataValues
+        user = user.toJSON();
 
-        //remove the password from the user data gotten from the db
-        const { password, ...userRest } = user;
-        console.log(userRest);
+        // check validity of password
+        const valid = await bcrypt.compare(password, user.password);
+        if (!valid) {
+          return errorResponse(res, 409, "invalid login details", null);
+        } else {
+          // create a token
+          const token = jwt.sign(
+            {
+              id: user.id,
+              email: user.email,
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "24h" }
+          );
 
-        successResponse(res, 200, "login successful", {
-          token,
-          userRest,
-        });
+          //remove the password from the user data gotten from the db
+          const { password, ...userRest } = user;
+
+          return successResponse(res, 200, "login successful", {
+            token,
+            user: userRest,
+          });
+        }
       }
     } catch (err) {
       errorResponse(res, 500, "internal server error", err.message);
