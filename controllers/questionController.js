@@ -67,14 +67,49 @@ class Questions {
 
   static async getOne(req, res) {
     let id = req.params.id;
-    console.log(typeof id);
 
     try {
       const questions = await Question.findOne({
         where: { id: id },
       });
 
+      if (!questions) {
+        return errorResponse(res, 404, "question not found", null);
+      }
+
       return successResponse(res, 200, "successful", questions);
+    } catch (err) {
+      errorResponse(res, 500, "internal server error", err.message);
+    }
+  }
+
+  static async deleteQuestion(req, res) {
+    let userId = req.user.id;
+    let paramsId = req.params.id
+
+    try {
+      const question = await Question.findOne({
+        where: { id: paramsId },
+      });
+
+      if (!question) {
+        return errorResponse(
+          res,
+          404,
+          "question not found",
+          null
+        );
+      }
+
+      if (userId != question.userId) {
+        return errorResponse(res, 401, "you can't delete another user's question ", null);
+      }
+
+      await Question.destroy({
+        where: { id: paramsId },
+      });
+
+      return successResponse(res, 200, "question is deleted successfully", question);
     } catch (err) {
       errorResponse(res, 500, "internal server error", err.message);
     }
