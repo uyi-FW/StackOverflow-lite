@@ -1,6 +1,6 @@
 const db = require("../models");
 const Question = db.question;
-// const User = db.user;
+const User = db.user;
 
 const { validationResult } = require("express-validator");
 const { errorResponse, successResponse } = require("../handler/response");
@@ -31,14 +31,8 @@ class Questions {
   static async getAll(req, res) {
     try {
       const questions = await Question.findAll({
-        /* trying to load eager relations */
-        // include: User,
-        // include: [
-        //   {
-        //     model: Users,
-        //     as: "user",
-        //   },
-        // ],
+        // to load eager relations
+        include: User,
       });
 
       return successResponse(res, 200, "successful", questions);
@@ -57,8 +51,6 @@ class Questions {
         where: { userId: id },
       });
 
-      console.log(questions);
-
       return successResponse(res, 200, "successful", questions);
     } catch (err) {
       errorResponse(res, 500, "internal server error", err.message);
@@ -71,6 +63,8 @@ class Questions {
     try {
       const questions = await Question.findOne({
         where: { id: id },
+        // to load eager relations
+        include: User,
       });
 
       if (!questions) {

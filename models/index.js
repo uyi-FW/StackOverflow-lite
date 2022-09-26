@@ -46,4 +46,7 @@ db.Sequelize = Sequelize;
 db.user = require('./user')(sequelize, DataTypes);
 db.question = require('./question')(sequelize, DataTypes);
 
+db.user.hasMany(db.question)
+db.question.belongsTo(db.user)
+
 module.exports = db;

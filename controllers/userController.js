@@ -61,7 +61,7 @@ class Users {
       const { email, password } = req.body;
 
       // check if email exists on db
-      let user = await User.findOne({ where: { email: email } });
+      let user = await User.unscoped().findOne({ where: { email: email } });
 
       if (!user) {
         return errorResponse(res, 400, "invalid email or password", null);
