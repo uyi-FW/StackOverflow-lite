@@ -46,6 +46,7 @@ db.Sequelize = Sequelize;
 db.user = require('./user')(sequelize, DataTypes);
 db.question = require('./question')(sequelize, DataTypes);
 db.answer = require('./answer')(sequelize, DataTypes);
+db.comment = require('./comment')(sequelize, DataTypes)
 
 // One-To-Many Relationship between User and Question
 db.user.hasMany(db.question)
@@ -58,5 +59,13 @@ db.answer.belongsTo(db.user)
 // One-To-Many Relationship between Question and Answer
 db.question.hasMany(db.answer)
 db.answer.belongsTo(db.question)
+
+// One-To-Many Relationship between User and Comment
+db.user.hasMany(db.comment);
+db.comment.belongsTo(db.user);
+
+// One-To-Many Relationship between Answer and Comment
+db.answer.hasMany(db.comment);
+db.comment.belongsTo(db.answer);
 
 module.exports = db;
