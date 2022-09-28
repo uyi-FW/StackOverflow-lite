@@ -1,6 +1,5 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-// const User = require("../models/user");
 
 const db = require("../models");
 const User = db.user;
@@ -9,7 +8,7 @@ const { validationResult } = require("express-validator");
 const { errorResponse, successResponse } = require("../handler/response");
 
 class Users {
-  static async register(req, res, next) {
+  static async register(req, res) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return errorResponse(res, 422, "validation error", errors.mapped());
@@ -27,16 +26,32 @@ class Users {
       };
 
       // save to db
-      const newUser = await User.create(payload);
-      console.log(newUser);
+      // .toJSON() gets the raw data without _previousDataValues
+      let newUser = await User.create(payload);
+      newUser = newUser.toJSON()
 
-      return successResponse(res, 201, "sign up completed", newUser);
+      // sign token
+      const token = jwt.sign(
+        {
+          id: newUser.id,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "24h" }
+      );
+
+      //remove the password from the user data gotten from the db
+      const { password, ...newUserRest } = newUser;
+
+      return successResponse(res, 201, "sign up completed", {
+        token,
+        newUserRest,
+      });
     } catch (err) {
       errorResponse(res, 500, "internal server error", err.message);
     }
   }
 
-  static async login(req, res, next) {
+  static async login(req, res) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return errorResponse(res, 422, "validation error", errors.mapped());
@@ -46,7 +61,10 @@ class Users {
       const { password } = req.body;
 
       // req.user is passed from the validator
-      const user = req.user;
+      // .toJSON() gets the raw data without _previousDataValues
+      const user = req.user.toJSON();
+      console.log("USERRRRRR: ", user);
+
       // check validity of password
       const valid = await bcrypt.compare(password, user.password);
       if (!valid) {
@@ -61,9 +79,14 @@ class Users {
           process.env.JWT_SECRET,
           { expiresIn: "24h" }
         );
+
+        //remove the password from the user data gotten from the db
+        const { password, ...userRest } = user;
+        console.log(userRest);
+
         successResponse(res, 200, "login successful", {
           token,
-          fullName: `${user.firstName} ${user.lastName}`,
+          userRest,
         });
       }
     } catch (err) {
