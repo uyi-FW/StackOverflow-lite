@@ -21,6 +21,9 @@ router.get("/me", checkAuth, questionController.getMine);
 
 router.get("/:id", checkAuth, questionController.getOne);
 
+router.delete("/:id", checkAuth, questionController.deleteQuestion);
+
+
 
 
 module.exports = router;
