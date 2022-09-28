@@ -28,6 +28,18 @@ router.get(
 router.post(
   "/answers/:id/accept",
   checkAuth,
-answerController.acceptAnswer)
+  answerController.acceptAnswer)
+
+router.put(
+  "/answers/:id/upvote",
+  checkAuth,
+  answerController.upvoteAnswer
+)
+
+router.put(
+  "/answers/:id/downvote",
+  checkAuth,
+  answerController.downvoteAnswer
+)
 
 module.exports = router;
