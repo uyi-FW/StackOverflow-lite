@@ -4,6 +4,7 @@ const Question = db.question;
 
 const { validationResult } = require("express-validator");
 const { errorResponse, successResponse } = require("../handler/response");
+const { user } = require("../models");
 
 class Answers {
   static async addAnswer(req, res) {
@@ -86,7 +87,6 @@ class Answers {
   static async acceptAnswer(req, res) {
     try {
       const id = Number(req.params.id);
-      
 
       let answer = await Answer.findOne({
         where: { id: id },
@@ -124,10 +124,64 @@ class Answers {
       });
 
       await question.set({
-        acceptedAnswer: answer.id
-      })
+        acceptedAnswer: answer.id,
+      });
 
-      question = await question.save()
+      question = await question.save();
+      answer = await answer.save();
+
+      return successResponse(res, 200, "successful", {
+        answer,
+      });
+    } catch (err) {
+      errorResponse(res, 500, "internal server error", err.message);
+    }
+  }
+
+  static async upvoteAnswer(req, res) {
+    try {
+      const id = Number(req.params.id);
+
+      let answer = await Answer.findOne({
+        where: { id: id },
+        include: Question,
+      });
+
+      if (!answer) {
+        return errorResponse(res, 404, "answer not found", null);
+      }
+
+      await answer.set({
+        votes: answer.votes + 1,
+      });
+
+      answer = await answer.save();
+
+      return successResponse(res, 200, "successful", {
+        answer,
+      });
+    } catch (err) {
+      errorResponse(res, 500, "internal server error", err.message);
+    }
+  }
+
+  static async downvoteAnswer(req, res) {
+    try {
+      const id = Number(req.params.id);
+
+      let answer = await Answer.findOne({
+        where: { id: id },
+        include: Question,
+      });
+
+      if (!answer) {
+        return errorResponse(res, 404, "answer not found", null);
+      }
+
+      await answer.set({
+        votes: answer.votes - 1,
+      });
+
       answer = await answer.save();
 
       return successResponse(res, 200, "successful", {
