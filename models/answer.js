@@ -3,18 +3,17 @@
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class Question extends Model {
+  class Answer extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    // static associate(models) {
+    static associate(models) {
       // define association here
-    // }
+    }
   }
-
-  Question.init(
+  Answer.init(
     {
       description: {
         type: DataTypes.STRING,
@@ -24,15 +23,25 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      acceptedAnswer: {
-        type: DataTypes.INTEGER
+      questionId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      votes: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      accepted: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
       },
     },
     {
       sequelize,
-      modelName: "Question",
+      modelName: "Answer",
     }
   );
-
-  return Question;
+  return Answer;
 };

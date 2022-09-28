@@ -61,6 +61,7 @@ class Users {
       const { email, password } = req.body;
 
       // check if email exists on db
+      // .unscoped() fetches all the columns on User, even password which is excluded 
       let user = await User.unscoped().findOne({ where: { email: email } });
 
       if (!user) {
