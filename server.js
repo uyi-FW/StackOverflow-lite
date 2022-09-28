@@ -23,6 +23,13 @@ app.get("/", (req, res) => {
   res.json({ message: "hello from api" });
 });
 
+app.use("*", (req, res, next) => {
+  return res.status(404).json({
+    statusCode: 404,
+    response: "resource not found",
+  });
+});
+
 //port
 const PORT = process.env.PORT || 3000;
 
