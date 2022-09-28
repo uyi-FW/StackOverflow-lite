@@ -19,4 +19,15 @@ router.get("/questions/:id/answers",
   answerController.getAllAnswers
 );
 
+router.get(
+  "/answers/:id",
+  checkAuth,
+  answerController.getOneAnswer
+);
+
+router.post(
+  "/answers/:id/accept",
+  checkAuth,
+answerController.acceptAnswer)
+
 module.exports = router;
