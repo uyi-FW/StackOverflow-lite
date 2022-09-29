@@ -23,7 +23,7 @@ router.get("/:id", checkAuth, questionController.getOne);
 
 router.delete("/:id", checkAuth, questionController.deleteQuestion);
 
-
+router.post("/search", questionController.searchForQuestion)
 
 
 module.exports = router;

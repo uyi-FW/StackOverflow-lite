@@ -1,6 +1,7 @@
 const db = require("../models");
 const Question = db.question;
 const User = db.user;
+const { Op } = require("sequelize");
 
 const { validationResult } = require("express-validator");
 const { errorResponse, successResponse } = require("../handler/response");
@@ -104,6 +105,20 @@ class Questions {
       });
 
       return successResponse(res, 200, "question is deleted successfully", question);
+    } catch (err) {
+      errorResponse(res, 500, "internal server error", err.message);
+    }
+  }
+
+  static async searchForQuestion(req, res) {
+    const searchTerm = req.body.searchTerm;
+
+    try {
+      const response = await Question.findAll({
+        where: { description: { [Op.like]: "%" + searchTerm + "%" } },
+        include: User,
+      });
+      return successResponse(res, 200, "successful", response);
     } catch (err) {
       errorResponse(res, 500, "internal server error", err.message);
     }
