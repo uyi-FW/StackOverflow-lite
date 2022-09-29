@@ -10,7 +10,7 @@
 
 ## Live Demo
 
-[Live Demo Link](https://livedemo.com)
+[Live Demo Link](https://stack-overflow-lite-uyi.herokuapp.com/)
 
 ## Getting Started
 
