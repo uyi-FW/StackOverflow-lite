@@ -1,6 +1,7 @@
 const db = require("../models");
 const Question = db.question;
 const User = db.user;
+const Answer = db.answer
 const { Op } = require("sequelize");
 
 const { validationResult } = require("express-validator");
@@ -58,21 +59,38 @@ class Questions {
     }
   }
 
+  static async getPopularQuestion(req, res) {
+    try {
+      // const question = await Question.findAll({
+      //   where: { id: id },
+      //   // to load eager relations
+      //   include: User,
+      // });
+
+      const popular = await Answer.findAll({
+        where: {}
+      })
+    } catch (err) {
+      errorResponse(res, 500, "internal server error", err.message);
+    }
+
+  }
+
   static async getOne(req, res) {
     let id = req.params.id;
 
     try {
-      const questions = await Question.findOne({
+      const question = await Question.findOne({
         where: { id: id },
         // to load eager relations
         include: User,
       });
 
-      if (!questions) {
+      if (!question) {
         return errorResponse(res, 404, "question not found", null);
       }
 
-      return successResponse(res, 200, "successful", questions);
+      return successResponse(res, 200, "successful", question);
     } catch (err) {
       errorResponse(res, 500, "internal server error", err.message);
     }

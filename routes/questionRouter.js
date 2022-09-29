@@ -19,6 +19,8 @@ router.get("/", checkAuth, questionController.getAll);
 
 router.get("/me", checkAuth, questionController.getMine);
 
+router.get("/popular", questionController.getPopularQuestion)
+
 router.get("/:id", checkAuth, questionController.getOne);
 
 router.delete("/:id", checkAuth, questionController.deleteQuestion);
