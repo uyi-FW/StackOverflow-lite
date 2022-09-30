@@ -19,13 +19,17 @@ router.get("/", checkAuth, questionController.getAll);
 
 router.get("/me", checkAuth, questionController.getMine);
 
-router.get("/popular", questionController.getPopularQuestion)
+// router.get("/popular", checkAuth, questionController.getPopularQuestion);
 
 router.get("/:id", checkAuth, questionController.getOne);
 
 router.delete("/:id", checkAuth, questionController.deleteQuestion);
 
-router.post("/search", questionController.searchForQuestion)
-
+router.post(
+  "/search",
+  checkAuth,
+  ValidateQuestion.SEARCH_QUESTION,
+  questionController.searchForQuestion
+);
 
 module.exports = router;
