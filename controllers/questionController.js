@@ -1,11 +1,12 @@
 const db = require("../models");
 const Question = db.question;
 const User = db.user;
-const Answer = db.answer
+const Answer = db.answer;
 const { Op } = require("sequelize");
 
 const { validationResult } = require("express-validator");
 const { errorResponse, successResponse } = require("../handler/response");
+const { sequelize } = require("../models");
 
 class Questions {
   static async addQuestion(req, res) {
@@ -59,22 +60,15 @@ class Questions {
     }
   }
 
-  static async getPopularQuestion(req, res) {
-    try {
-      // const question = await Question.findAll({
-      //   where: { id: id },
-      //   // to load eager relations
-      //   include: User,
-      // });
+  // static async getPopularQuestion(req, res) {
+  //   try {
+  //     const popular = await sequelize.query("SELECT * FROM Answers");
 
-      const popular = await Answer.findAll({
-        where: {}
-      })
-    } catch (err) {
-      errorResponse(res, 500, "internal server error", err.message);
-    }
-
-  }
+  //     return successResponse(res, 200, "successful", popular);
+  //   } catch (err) {
+  //     errorResponse(res, 500, "internal server error", err.message);
+  //   }
+  // }
 
   static async getOne(req, res) {
     let id = req.params.id;
@@ -98,7 +92,7 @@ class Questions {
 
   static async deleteQuestion(req, res) {
     let userId = req.user.id;
-    let paramsId = req.params.id
+    let paramsId = req.params.id;
 
     try {
       const question = await Question.findOne({
@@ -106,29 +100,39 @@ class Questions {
       });
 
       if (!question) {
-        return errorResponse(
-          res,
-          404,
-          "question not found",
-          null
-        );
+        return errorResponse(res, 404, "question not found", null);
       }
 
       if (userId != question.userId) {
-        return errorResponse(res, 401, "you can't delete another user's question ", null);
+        return errorResponse(
+          res,
+          401,
+          "you can't delete another user's question ",
+          null
+        );
       }
 
       await Question.destroy({
         where: { id: paramsId },
       });
 
-      return successResponse(res, 200, "question is deleted successfully", question);
+      return successResponse(
+        res,
+        200,
+        "question is deleted successfully",
+        question
+      );
     } catch (err) {
       errorResponse(res, 500, "internal server error", err.message);
     }
   }
 
   static async searchForQuestion(req, res) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return errorResponse(res, 422, "validation error", errors.mapped());
+    }
+
     const searchTerm = req.body.searchTerm;
 
     try {

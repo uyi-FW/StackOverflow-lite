@@ -6,8 +6,8 @@ const User = db.user;
 exports.REGISTER = [
   body("firstName")
     .isString()
-    .notEmpty()
     .trim()
+    .notEmpty()
     .isLength({ min: 2, max: 50 })
     .withMessage("first name must be between 2-50 characters")
     .toLowerCase()
@@ -16,8 +16,8 @@ exports.REGISTER = [
 
   body("lastName")
     .isString()
-    .notEmpty()
     .trim()
+    .notEmpty()
     .isLength({ min: 2, max: 50 })
     .withMessage("last name must be between 2-50 characters")
     .toLowerCase()
@@ -25,8 +25,8 @@ exports.REGISTER = [
     .withMessage("last name can only contain letters"),
 
   body("email")
-    .notEmpty()
     .trim()
+    .notEmpty()
     .toLowerCase()
     .normalizeEmail()
     .isEmail()
@@ -40,8 +40,9 @@ exports.REGISTER = [
     }),
 
   body("password")
-    .notEmpty()
+    .isString()
     .trim()
+    .notEmpty()
     .isLength({ min: 8, max: 50 })
     .withMessage("password must have a minimum of 8 characters")
     .isStrongPassword()
@@ -52,9 +53,9 @@ exports.REGISTER = [
 
 exports.LOGIN = [
   body("email")
+    .trim()
     .notEmpty()
     .isEmail()
-    .trim()
     .toLowerCase()
     .normalizeEmail()
     .custom((value, { req }) => {
@@ -65,6 +66,6 @@ exports.LOGIN = [
         req.user = result;
       });
     }),
-  
+
   body("password").notEmpty().trim(),
 ];
